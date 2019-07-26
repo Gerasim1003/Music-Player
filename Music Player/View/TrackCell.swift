@@ -16,34 +16,51 @@ protocol TrackCellDelegate {
 }
 
 class TrackCell: UITableViewCell {
-    @IBOutlet weak var playButton: UIButton!
-    @IBOutlet weak var pauseButton: UIButton!
-    @IBOutlet weak var trackImageView: UIImageView!
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var artistLabel: UILabel!
     
     var delegate: TrackCellDelegate?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var artistLabel: UILabel!
+    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var progressLabel: UILabel!
+    @IBOutlet weak var pauseButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
+    @IBOutlet weak var downloadButton: UIButton!
+    
+    @IBAction func pauseOrResumeTapped(_ sender: AnyObject) {
+        if(pauseButton.titleLabel?.text == "Pause") {
+            delegate?.pauseTapped(self)
+        } else {
+            delegate?.resumeTapped(self)
+        }
     }
-    @IBAction func PlayTapped(_ sender: Any) {
+    
+    @IBAction func cancelTapped(_ sender: AnyObject) {
+        delegate?.cancelTapped(self)
+    }
+    
+    @IBAction func downloadTapped(_ sender: AnyObject) {
+        downloadButton.isEnabled = false
         delegate?.downloadTapped(self)
     }
-    @IBAction func pauseTapped(_ sender: Any) {
+    
+    func configure(track: Track, downloaded: Bool, download: Download?) {
+        titleLabel.text = track.name
+        artistLabel.text = track.artist
+        
+        var showDownloadControls = false
+        if let download = download {
+            showDownloadControls = true
+            let title = download.isDownloading ? "Pause" : "Resume"
+            pauseButton.setTitle(title, for: .normal)
+        }
+        pauseButton.isHidden = !showDownloadControls
+        cancelButton.isHidden = !showDownloadControls
+        
+        // If the track is already downloaded, enable cell selection and hide the Download button
+        selectionStyle = downloaded ? UITableViewCell.SelectionStyle.gray : UITableViewCell.SelectionStyle.none
+        downloadButton.isHidden = downloaded || showDownloadControls
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
-    func setup(image: UIImage, name: String, artist: String) {
-        self.trackImageView.image = image
-        self.nameLabel.text = name
-        self.artistLabel.text = artist
-    }
-
 }
+

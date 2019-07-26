@@ -17,6 +17,7 @@ extension SearchViewController: URLSessionDownloadDelegate {
         print(destinationURL)
         let fileManager = FileManager.default
         try? fileManager.removeItem(at: destinationURL)
+        
         do {
             try fileManager.copyItem(at: location, to: destinationURL)
             download?.track.downloaded = true

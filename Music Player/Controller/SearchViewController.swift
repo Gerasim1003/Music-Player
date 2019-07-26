@@ -10,9 +10,15 @@ import UIKit
 import AVKit
 import AVFoundation
 
+protocol SearchViewControllerDelegate {
+    func play(_ track: Track)
+}
+
 class SearchViewController: UIViewController {
     @IBOutlet var tableView: UITableView!
     @IBOutlet var searchBar: UISearchBar!
+    
+    var delegate: SearchViewControllerDelegate!
     
     lazy var tapRecognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -33,30 +39,34 @@ class SearchViewController: UIViewController {
         return documentsPath.appendingPathComponent(url.lastPathComponent)
     }
     
+    let playerViewController = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
         
-        tableView.rowHeight = 80
+        tableView.rowHeight = 62
         
         downloadService.downloadSession = downloadSession
         
-        let playerViewController = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
+        delegate = playerViewController
         addChild(playerViewController)
-        playerViewController.view.frame = CGRect(x: 0, y: 200, width: view.frame.width, height: view.frame.height - 200)
+        playerViewController.view.frame = CGRect(x: 0, y: 300, width: view.frame.width, height: view.frame.height - 300)
         view.addSubview(playerViewController.view)
         playerViewController.didMove(toParent: self)
     }
     
     func playDownload(_ track: Track) {
-        let playerViewController = AVPlayerViewController()
-        present(playerViewController, animated: true, completion: nil)
         let url = localFilePath(for: track.previewURL)
-        let player = AVPlayer(url: url)
-        playerViewController.player = player
+
+        let playerItem: AVPlayerItem = AVPlayerItem(url: url)
+        let player = AVPlayer(playerItem: playerItem)
+        
+        let playerLayer = AVPlayerLayer(player: player)
+        
+        self.view.layer.addSublayer(playerLayer)
         player.play()
     }
-    
 }
 
 //MARK: TableView
@@ -69,7 +79,9 @@ extension SearchViewController: UITableViewDataSource {
         let reuseIdentifier = "TrackCell"
         guard let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as? TrackCell else { return UITableViewCell() }
         
-        cell.setup(image: UIImage(), name: searchResults[indexPath.row].name, artist: searchResults[indexPath.row].artist)
+        let track = searchResults[indexPath.row]
+        let download = downloadService.activeDownloads[track.previewURL]
+        cell.configure(track: track, downloaded: track.downloaded, download: download )
         cell.delegate = self
         
         return cell
@@ -81,7 +93,12 @@ extension SearchViewController: UITableViewDataSource {
 // MARK: - TrackCellDelegate
 extension SearchViewController: TrackCellDelegate {
     func pauseTapped(_ cell: TrackCell) {
-        
+        if let indexPath = tableView.indexPath(for: cell) {
+            let track = searchResults[indexPath.row]
+            downloadService.pauseDownload(track)
+            self.delegate.play(track)
+            //            tableView.reloadRows(at: [indexPath], with: .none)
+        }
     }
     
     func resumeTapped(_ cell: TrackCell) {
@@ -96,7 +113,8 @@ extension SearchViewController: TrackCellDelegate {
         if let indexPath = tableView.indexPath(for: cell) {
             let track = searchResults[indexPath.row]
             downloadService.startDownload(track)
-            tableView.reloadRows(at: [indexPath], with: .none)
+            self.delegate.play(track)
+//            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     

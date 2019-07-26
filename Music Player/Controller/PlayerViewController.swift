@@ -1,14 +1,10 @@
-//
-//  ViewController.swift
-//  Music Player
-//
-//  Created by Gerasim Israyelyan on 7/22/19.
-//  Copyright © 2019 Gerasim Israyelyan. All rights reserved.
-//
-
 import UIKit
+import AVKit
+import AVFoundation
 
-class PlayerViewController: UIViewController {
+class PlayerViewController: UIViewController, SearchViewControllerDelegate {
+    
+    var musicPlayer = AVAudioPlayer()
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var reverseBackground: UIView!
@@ -21,9 +17,9 @@ class PlayerViewController: UIViewController {
     var isPlaying: Bool = true {
         didSet {
             if isPlaying {
-                playPauseButton.setImage(UIImage(named: "pause"), for: .normal)
-            } else {
                 playPauseButton.setImage(UIImage(named: "play"), for: .normal)
+            } else {
+                playPauseButton.setImage(UIImage(named: "pause"), for: .normal)
             }
         }
     }
@@ -118,6 +114,25 @@ class PlayerViewController: UIViewController {
         }
     }
     
+    //MARK: AVPlayer
     
+    func prepareMusicSession(_ track: Track) {
+//        guard let player = try? AVAudioPlayer(contentsOf: track.previewURL) else {
+//            return
+//        }
+//        player.prepareToPlay()
+//
+    }
+    
+    //MARK: SearchViewControllerDelegate
+    func play(_ track: Track) {
+//        prepareMusicSession(track)
+//        musicPlayer.play()
+    }
+    
+    func pause() {
+        
+    }
+
 }
 

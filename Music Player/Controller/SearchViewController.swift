@@ -40,6 +40,7 @@ class SearchViewController: UIViewController {
     }
     
     let playerViewController = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
+    var player: AVPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,15 +58,18 @@ class SearchViewController: UIViewController {
     }
     
     func playDownload(_ track: Track) {
+        if player != nil {
+            player?.pause()
+        }
         let url = localFilePath(for: track.previewURL)
 
         let playerItem: AVPlayerItem = AVPlayerItem(url: url)
-        let player = AVPlayer(playerItem: playerItem)
+        player = AVPlayer(playerItem: playerItem)
         
         let playerLayer = AVPlayerLayer(player: player)
         
         self.view.layer.addSublayer(playerLayer)
-        player.play()
+        player!.play()
     }
 }
 
@@ -96,25 +100,32 @@ extension SearchViewController: TrackCellDelegate {
         if let indexPath = tableView.indexPath(for: cell) {
             let track = searchResults[indexPath.row]
             downloadService.pauseDownload(track)
-            self.delegate.play(track)
-            //            tableView.reloadRows(at: [indexPath], with: .none)
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
     func resumeTapped(_ cell: TrackCell) {
-        
+        if let indexPath = tableView.indexPath(for: cell) {
+            let track = searchResults[indexPath.row]
+            downloadService.resumeDownload(track)
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
     }
     
     func cancelTapped(_ cell: TrackCell) {
-        
+        if let indexPath = tableView.indexPath(for: cell) {
+            let track = searchResults[indexPath.row]
+            downloadService.cancelDownload(track)
+            tableView.reloadRows(at: [indexPath], with: .none)
+        }
     }
     
     func downloadTapped(_ cell: TrackCell) {
         if let indexPath = tableView.indexPath(for: cell) {
             let track = searchResults[indexPath.row]
             downloadService.startDownload(track)
-            self.delegate.play(track)
-//            tableView.reloadRows(at: [indexPath], with: .none)
+//            self.delegate.play(track)
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     

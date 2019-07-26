@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Track {
+class Track {
     
     let name: String
     let artist: String

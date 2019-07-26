@@ -126,8 +126,7 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     
     //MARK: SearchViewControllerDelegate
     func play(_ track: Track) {
-//        prepareMusicSession(track)
-//        musicPlayer.play()
+
     }
     
     func pause() {

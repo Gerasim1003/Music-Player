@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Music Player/View/TrackCell.swift"
-            timestampString = "585813167.151166"
+            timestampString = "585815144.725875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "52"
@@ -22,16 +22,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Music Player/Networking/DownloadService.swift"
-            timestampString = "585813167.151252"
+            timestampString = "585815144.725967"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "17"
-            endingLineNumber = "17"
-            landmarkName = "startDownload(_:)"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "cancelDownload(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

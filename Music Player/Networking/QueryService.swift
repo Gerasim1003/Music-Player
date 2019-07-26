@@ -6,7 +6,7 @@
 //  Copyright © 2019 Gerasim Israyelyan. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class QueryService {
     var tracks: [Track] = []
@@ -52,10 +52,15 @@ class QueryService {
         for trackDictionary in array {
             if let trackDictionary = trackDictionary as? [String: Any],
                 let previewURLString = trackDictionary["previewUrl"] as? String,
+                let imageURLString = trackDictionary["artworkUrl100"] as? String,
                 let previewURL = URL(string: previewURLString),
+                let imageURL = URL(string: previewURLString),
                 let name = trackDictionary["trackName"] as? String,
                 let artist = trackDictionary["artistName"] as? String {
-                    tracks.append(Track(name: name, artist: artist, previewURL: previewURL, index: index))
+                let url = URL(string: imageURLString)
+                let data = try? Data(contentsOf: url!)
+                let image = UIImage(data: data!)
+                tracks.append(Track(name: name, artist: artist, previewURL: previewURL, image: image, index: index))
                 index += 1
             }
         }

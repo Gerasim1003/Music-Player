@@ -48,4 +48,5 @@ class DownloadService {
         download.task!.resume()
         download.isDownloading = true
     }
+    
 }

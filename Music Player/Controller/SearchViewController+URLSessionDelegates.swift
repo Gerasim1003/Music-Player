@@ -22,9 +22,9 @@ extension SearchViewController: URLSessionDownloadDelegate {
             try fileManager.copyItem(at: location, to: destinationURL)
             download?.track.downloaded = true
             self.searchResults[(download?.track.index)!].downloaded = true
-            if self.searchResults[(download?.track.index)!].downloaded {
-                self.playDownload(self.searchResults[(download?.track.index)!])
-            }
+//            if self.searchResults[(download?.track.index)!].downloaded {
+//                self.playDownload(self.searchResults[(download?.track.index)!])
+//            }
         } catch let error {
             print("Could not copy file to disk: \(error.localizedDescription)")
         }

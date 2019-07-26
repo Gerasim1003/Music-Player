@@ -11,7 +11,7 @@ import AVKit
 import AVFoundation
 
 protocol SearchViewControllerDelegate {
-    func play(_ track: Track)
+    func prepareMusicSession(_ track: Track)
 }
 
 class SearchViewController: UIViewController {
@@ -57,24 +57,11 @@ class SearchViewController: UIViewController {
         playerViewController.didMove(toParent: self)
     }
     
-    func playDownload(_ track: Track) {
-        if player != nil {
-            player?.pause()
-        }
-        let url = localFilePath(for: track.previewURL)
 
-        let playerItem: AVPlayerItem = AVPlayerItem(url: url)
-        player = AVPlayer(playerItem: playerItem)
-        
-        let playerLayer = AVPlayerLayer(player: player)
-        
-        self.view.layer.addSublayer(playerLayer)
-        player!.play()
-    }
 }
 
 //MARK: TableView
-extension SearchViewController: UITableViewDataSource {
+extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return searchResults.count
     }
@@ -91,6 +78,13 @@ extension SearchViewController: UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let track = searchResults[indexPath.row]
+        if track.downloaded {
+            delegate.prepareMusicSession(track)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
     
 }
 
@@ -124,7 +118,6 @@ extension SearchViewController: TrackCellDelegate {
         if let indexPath = tableView.indexPath(for: cell) {
             let track = searchResults[indexPath.row]
             downloadService.startDownload(track)
-//            self.delegate.play(track)
             tableView.reloadRows(at: [indexPath], with: .none)
         }
     }

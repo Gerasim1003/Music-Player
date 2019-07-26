@@ -4,7 +4,8 @@ import AVFoundation
 
 class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     
-    var musicPlayer = AVAudioPlayer()
+    var player: AVPlayer?
+    var track: Track?
     
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var reverseBackground: UIView!
@@ -13,20 +14,27 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     @IBOutlet weak var reverseButton: UIButton!
     @IBOutlet weak var playPauseButton: UIButton!
     @IBOutlet weak var forwardButton: UIButton!
+    @IBOutlet weak var artistNameLabel: UILabel!
+    @IBOutlet weak var trackNameLabel: UILabel!
     
-    var isPlaying: Bool = true {
+    var isPlaying: Bool = false {
         didSet {
             if isPlaying {
-                playPauseButton.setImage(UIImage(named: "play"), for: .normal)
-            } else {
                 playPauseButton.setImage(UIImage(named: "pause"), for: .normal)
+                play()
+            } else {
+                playPauseButton.setImage(UIImage(named: "play"), for: .normal)
+                pause()
             }
         }
     }
     
+    let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        self.imageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
         
         reverseBackground.layer.cornerRadius = 35
         reverseBackground.clipsToBounds = true
@@ -46,18 +54,18 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
         
     }
     
+    
     @IBAction func playPauseButtonTapped(_ sender: UIButton) {
+        guard track != nil else { return }
+        
         switch sender.tag {
         case 0: //reverseButton
             break
         case 1: //playPauseButton
             if isPlaying {
-                UIView.animate(withDuration: 0.5) {
-                    self.imageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-                }
+                animateionScale()
             } else {
-                UIView.animate(withDuration: 0.5) {
-                    self.imageView.transform = CGAffineTransform.identity                }
+                animationIdentity()
             }
             
             isPlaying.toggle()
@@ -67,6 +75,7 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
             break
         }
     }
+    
     @IBAction func touchedDown(_ sender: UIButton) {
         var buttonBackground: UIView = UIView()
         
@@ -114,23 +123,62 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
         }
     }
     
+    func animateionScale() {
+        UIView.animate(withDuration: 0.5) {
+            self.imageView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        }
+    }
+    
+    func animationIdentity() {
+        UIView.animate(withDuration: 0.5) {
+            self.imageView.transform = CGAffineTransform.identity
+        }
+    }
+    
     //MARK: AVPlayer
+    func localFilePath(for url: URL) -> URL {
+        return documentsPath.appendingPathComponent(url.lastPathComponent)
+    }
     
     func prepareMusicSession(_ track: Track) {
-//        guard let player = try? AVAudioPlayer(contentsOf: track.previewURL) else {
-//            return
-//        }
-//        player.prepareToPlay()
-//
+        self.track = track
+
+        let url = localFilePath(for: track.previewURL)
+        
+        let playerItem: AVPlayerItem = AVPlayerItem(url: url)
+        player = AVPlayer(playerItem: playerItem)
+        
+        let playerLayer = AVPlayerLayer(player: player)
+        
+        self.view.layer.addSublayer(playerLayer)
+        
+        play()
+        isPlaying = true
+        animationIdentity()
+        setup()
+    }
+    
+    func setup() {
+        guard let track = track else { return }
+        
+        UIView.animate(withDuration: 0.25) {
+            self.trackNameLabel.text = track.name
+            self.artistNameLabel.text = track.artist
+            self.imageView.image = track.image
+        }
     }
     
     //MARK: SearchViewControllerDelegate
-    func play(_ track: Track) {
-
+    func play() {
+        if let player = player {
+            player.play()
+        }
     }
     
     func pause() {
-        
+        if let player = player {
+            player.pause()
+        }
     }
 
 }

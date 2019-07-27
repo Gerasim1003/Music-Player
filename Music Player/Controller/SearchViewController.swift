@@ -26,7 +26,7 @@ class SearchViewController: UIViewController {
     }()
     
     lazy var downloadSession: URLSession = {
-        let configuration = URLSessionConfiguration.default
+        let configuration = URLSessionConfiguration.background(withIdentifier: "bgSessionConfiguration")
         return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
     }()
     

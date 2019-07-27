@@ -6,7 +6,7 @@
 //  Copyright © 2019 Gerasim Israyelyan. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 extension SearchViewController: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
@@ -49,4 +49,19 @@ extension SearchViewController: URLSessionDownloadDelegate {
             }
         }
     }
+}
+
+extension SearchViewController: URLSessionDelegate {
+    
+    // Standard background session handler
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        DispatchQueue.main.async {
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+                let completionHandler = appDelegate.backgroundSessionCompletionHandler {
+                appDelegate.backgroundSessionCompletionHandler = nil
+                completionHandler()
+            }
+        }
+    }
+    
 }

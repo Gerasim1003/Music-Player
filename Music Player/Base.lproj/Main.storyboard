@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="6wg-fF-tsb">
-                                <rect key="frame" x="0.0" y="88" width="414" height="714"/>
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="TrackCell" rowHeight="62" id="6Lk-Mb-Pck" customClass="TrackCell" customModule="HalfTunes" customModuleProvider="target">
@@ -128,24 +128,14 @@
                                 <color key="barTintColor" red="0.0" green="0.58980089430000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="B7v-BK-wd4">
-                                <rect key="frame" x="0.0" y="802" width="414" height="60"/>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="q8h-Yc-EYL"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.58980089430000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="B7v-BK-wd4" firstAttribute="trailing" secondItem="2hv-ah-YzB" secondAttribute="trailing" id="A8t-cM-w9e"/>
-                            <constraint firstItem="B7v-BK-wd4" firstAttribute="top" secondItem="6wg-fF-tsb" secondAttribute="bottom" id="BCH-h7-Kuy"/>
+                            <constraint firstItem="2hv-ah-YzB" firstAttribute="bottom" secondItem="6wg-fF-tsb" secondAttribute="bottom" id="Gh7-xC-iaK"/>
                             <constraint firstItem="7kw-n9-sEA" firstAttribute="leading" secondItem="2hv-ah-YzB" secondAttribute="leading" id="Ou8-vg-Lrt"/>
-                            <constraint firstItem="B7v-BK-wd4" firstAttribute="leading" secondItem="2hv-ah-YzB" secondAttribute="leading" id="R9z-wy-fcS"/>
                             <constraint firstItem="6wg-fF-tsb" firstAttribute="top" secondItem="7kw-n9-sEA" secondAttribute="bottom" id="RLg-h0-hwA"/>
                             <constraint firstItem="7kw-n9-sEA" firstAttribute="top" secondItem="2hv-ah-YzB" secondAttribute="top" id="UxJ-OQ-3lx"/>
                             <constraint firstItem="6wg-fF-tsb" firstAttribute="leading" secondItem="2hv-ah-YzB" secondAttribute="leading" id="Z2p-xV-NFK"/>
-                            <constraint firstItem="B7v-BK-wd4" firstAttribute="bottom" secondItem="2hv-ah-YzB" secondAttribute="bottom" id="ZrS-dK-Igg"/>
                             <constraint firstItem="7kw-n9-sEA" firstAttribute="trailing" secondItem="2hv-ah-YzB" secondAttribute="trailing" id="dca-5o-F2f"/>
                             <constraint firstItem="2hv-ah-YzB" firstAttribute="trailing" secondItem="6wg-fF-tsb" secondAttribute="trailing" id="ey7-sc-cxU"/>
                         </constraints>

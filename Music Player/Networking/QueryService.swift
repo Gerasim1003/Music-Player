@@ -54,11 +54,10 @@ class QueryService {
                 let previewURLString = trackDictionary["previewUrl"] as? String,
                 let imageURLString = trackDictionary["artworkUrl100"] as? String,
                 let previewURL = URL(string: previewURLString),
-                let imageURL = URL(string: previewURLString),
+                let imageURL = URL(string: imageURLString),
                 let name = trackDictionary["trackName"] as? String,
                 let artist = trackDictionary["artistName"] as? String {
-                let url = URL(string: imageURLString)
-                let data = try? Data(contentsOf: url!)
+                let data = try? Data(contentsOf: imageURL)
                 let image = UIImage(data: data!)
                 tracks.append(Track(name: name, artist: artist, previewURL: previewURL, image: image, index: index))
                 index += 1

@@ -10,6 +10,11 @@ import UIKit
 import AVKit
 import AVFoundation
 
+enum PlayerState {
+    case expanded
+    case collapsed
+}
+
 protocol SearchViewControllerDelegate {
     func prepareMusicSession(_ track: Track)
 }
@@ -39,22 +44,28 @@ class SearchViewController: UIViewController {
         return documentsPath.appendingPathComponent(url.lastPathComponent)
     }
     
-    let playerViewController = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
+    // interactive animation
+    var playerViewController: PlayerViewController!
+    var visualEffectView: UIVisualEffectView!
+    let playerHeight: CGFloat = 600
+    let playerHandleAreaHeight: CGFloat = 50
+    var playerVisible = false
+    var nextState: PlayerState  {
+        return playerVisible ? .collapsed : .expanded
+    }
+    var runninganimations = [UIViewPropertyAnimator]()
+    var animationProgressWhenInterrupted: CGFloat = 0
+//        = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
     var player: AVPlayer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchBar.delegate = self
-        
         tableView.rowHeight = 62
         
         downloadService.downloadSession = downloadSession
-        
-        delegate = playerViewController
-        addChild(playerViewController)
-        playerViewController.view.frame = CGRect(x: 0, y: 300, width: view.frame.width, height: view.frame.height - 300)
-        view.addSubview(playerViewController.view)
-        playerViewController.didMove(toParent: self)
+
+        setupPlayer()
     }
     
 
@@ -122,5 +133,95 @@ extension SearchViewController: TrackCellDelegate {
         }
     }
     
+    //MARK: interactive animation
+    func setupPlayer() {
+
+        visualEffectView = UIVisualEffectView()
+        self.visualEffectView.isUserInteractionEnabled = false
+        visualEffectView.frame = self.view.frame
+        self.view.addSubview(visualEffectView)
+        
+        playerViewController = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
+        delegate = playerViewController
+        self.addChild(playerViewController)
+        self.view.addSubview(playerViewController.view )
+        
+        playerViewController.view.frame = CGRect(x: 0, y: self.view.frame.height - playerHandleAreaHeight, width: self.view.bounds.width, height: playerHandleAreaHeight)
+        
+        playerViewController.view.clipsToBounds = true
+        
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(SearchViewController.handlePlayerPan(recognizer:)))
+        
+        playerViewController.handleArea.addGestureRecognizer(panGestureRecognizer)
+    }
+    
+    @objc func handlePlayerPan(recognizer: UIPanGestureRecognizer) {
+        switch recognizer.state {
+        case .began:
+            startTransition(state: nextState, duration: 0.9)
+        case .changed:
+            let translation = recognizer.translation(in: self.playerViewController.handleArea)
+            var fractionComplete = translation.y / playerHeight
+            fractionComplete = playerVisible ? fractionComplete : -fractionComplete
+            updateTransition(fractionCompleted: fractionComplete)
+        case .ended:
+            continueTransition()
+        default:
+            break
+        }
+    }
+    
+    func animateTransition(state: PlayerState, duration: TimeInterval) {
+        let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
+            switch state {
+            case .expanded:
+                self.playerViewController.view.frame = CGRect(x: 0, y: self.view.frame.height  - self.playerHeight, width: self.view.frame.width, height: self.playerHeight)
+            case .collapsed:
+                self.playerViewController.view.frame = CGRect(x: 0, y: self.view.frame.height  - self.playerHandleAreaHeight, width: self.view.frame.width, height: self.playerHandleAreaHeight)
+            }
+        }
+        
+        frameAnimator.addCompletion { _ in
+            self.playerVisible.toggle()
+            self.runninganimations.removeAll()
+        }
+        
+        frameAnimator.startAnimation()
+        runninganimations.append(frameAnimator)
+        
+        let blurAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
+            switch state {
+            case .expanded:
+                self.visualEffectView.effect = UIBlurEffect(style: .light)
+            case .collapsed:
+                self.visualEffectView.effect = nil
+            }
+        }
+        
+        blurAnimator.startAnimation()
+        runninganimations.append(blurAnimator)
+    }
+    
+    func startTransition(state: PlayerState, duration: TimeInterval) {
+        if runninganimations.isEmpty {
+            animateTransition(state: state, duration: duration )
+        }
+        
+        for animator in runninganimations {
+            animator.pauseAnimation()
+            animationProgressWhenInterrupted = animator.fractionComplete
+        }
+    }
+    
+    func updateTransition(fractionCompleted: CGFloat) {
+        for animator in runninganimations {
+            animator.fractionComplete = fractionCompleted + animationProgressWhenInterrupted
+        }
+    }
+    func continueTransition() {
+        for animator in runninganimations {
+            animator.continueAnimation(withTimingParameters: nil, durationFactor: 0)
+        }
+    }
     
 }

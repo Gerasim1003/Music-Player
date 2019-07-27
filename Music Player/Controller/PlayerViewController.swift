@@ -2,11 +2,17 @@ import UIKit
 import AVKit
 import AVFoundation
 
+enum AnimationState {
+    case fullscreen
+    case thumbnail
+}
+
 class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     
     var player: AVPlayer?
     var track: Track?
     
+    @IBOutlet weak var handleArea: UIView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var reverseBackground: UIView!
     @IBOutlet weak var playPauseBackground: UIView!
@@ -142,16 +148,16 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     
     func prepareMusicSession(_ track: Track) {
         self.track = track
+        
+        player?.replaceCurrentItem(with: nil)
 
         let url = localFilePath(for: track.previewURL)
-        
         let playerItem: AVPlayerItem = AVPlayerItem(url: url)
         player = AVPlayer(playerItem: playerItem)
         
         let playerLayer = AVPlayerLayer(player: player)
         
         self.view.layer.addSublayer(playerLayer)
-        
         play()
         isPlaying = true
         animationIdentity()
@@ -180,6 +186,6 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
             player.pause()
         }
     }
-
+    
 }
 

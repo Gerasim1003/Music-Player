@@ -47,15 +47,14 @@ class SearchViewController: UIViewController {
     // interactive animation
     var playerViewController: PlayerViewController!
     var visualEffectView: UIVisualEffectView!
-    let playerHeight: CGFloat = 600
-    let playerHandleAreaHeight: CGFloat = 50
+    var playerHeight: CGFloat!
+    let playerHandleAreaHeight: CGFloat = 70
     var playerVisible = false
     var nextState: PlayerState  {
         return playerVisible ? .collapsed : .expanded
     }
     var runninganimations = [UIViewPropertyAnimator]()
     var animationProgressWhenInterrupted: CGFloat = 0
-//        = PlayerViewController(nibName: "PlayerViewController", bundle: nil)
     var player: AVPlayer?
     
     override func viewDidLoad() {
@@ -153,6 +152,8 @@ extension SearchViewController: TrackCellDelegate {
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(SearchViewController.handlePlayerPan(recognizer:)))
         
         playerViewController.handleArea.addGestureRecognizer(panGestureRecognizer)
+        
+        playerHeight = playerViewController.extandedPlayerHeight
     }
     
     @objc func handlePlayerPan(recognizer: UIPanGestureRecognizer) {
@@ -175,8 +176,10 @@ extension SearchViewController: TrackCellDelegate {
         let frameAnimator = UIViewPropertyAnimator(duration: duration, dampingRatio: 1) {
             switch state {
             case .expanded:
+                self.playerViewController.extandPlayer()
                 self.playerViewController.view.frame = CGRect(x: 0, y: self.view.frame.height  - self.playerHeight, width: self.view.frame.width, height: self.playerHeight)
             case .collapsed:
+                self.playerViewController.collapsePlayer()
                 self.playerViewController.view.frame = CGRect(x: 0, y: self.view.frame.height  - self.playerHandleAreaHeight, width: self.view.frame.width, height: self.playerHandleAreaHeight)
             }
         }

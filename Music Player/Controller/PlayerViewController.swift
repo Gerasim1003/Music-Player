@@ -56,6 +56,9 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     
     var sliderY: CGFloat = 0
 
+    var timer: Timer? = Timer()
+    var timerValue = 0
+    
     override func viewWillAppear(_ animated: Bool) {
         collapsePlayer()
     }
@@ -84,7 +87,6 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         
     }
-    
     
     @IBAction func playPauseButtonTapped(_ sender: UIButton) {
         guard track != nil else { return }
@@ -192,11 +194,22 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
     func setup() {
         guard let track = track else { return }
         
+        let timeStamp = track.timeStamp
+        let secondsStamp = (timeStamp / 1000).rounded()
+        let seconds = Int(secondsStamp) % 60
+        let minute = (secondsStamp / 60).rounded()
+        
         UIView.animate(withDuration: 0.25) {
             self.trackNameLabel.text = track.name
             self.artistNameLabel.text = track.artist
             self.imageView.image = track.image
+            
+            self.timeLabel.text = "\(Int(minute)):\(Int(seconds))"
+            
         }
+        
+        self.slider.maximumValue = Float(secondsStamp)
+        
     }
     
     //MARK: SearchViewControllerDelegate
@@ -204,12 +217,15 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
         if let player = player {
             player.play()
         }
+
     }
     
     func pause() {
         if let player = player {
             player.pause()
         }
+        timer?.invalidate()
+        timer = nil
     }
     
     private func calculateCollapsedSizes() {
@@ -245,7 +261,7 @@ class PlayerViewController: UIViewController, SearchViewControllerDelegate {
         forwardButtonX = playButtonX + buttonWidth + 40
         buttonY = trackNameLabelY + labelHeight + 20
         
-        extandedPlayerHeight = buttonY
+        extandedPlayerHeight = buttonY + buttonWidth + 40
                 
         showSlider()
 

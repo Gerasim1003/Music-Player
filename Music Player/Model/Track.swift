@@ -14,14 +14,16 @@ class Track {
     let artist: String
     let previewURL: URL
     let image: UIImage?
+    let timeStamp: Double
     let index: Int
     var downloaded = false
     
-    init(name: String, artist: String, previewURL: URL, image: UIImage?, index: Int) {
+    init(name: String, artist: String, previewURL: URL, image: UIImage?, timeStamp: Double, index: Int) {
         self.name = name
         self.artist = artist
         self.previewURL = previewURL
         self.image = image
+        self.timeStamp = timeStamp
         self.index = index
     }
     
